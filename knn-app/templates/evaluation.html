@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Evaluation / KNN Studio{% endblock %}
+{% block content %}
+<section class="page-heading compact-heading">
+  <p class="eyebrow">03 / MODEL CHECK</p>
+  <div class="heading-row"><h1>How well does it <em>travel?</em></h1><span class="model-chip">HELD-OUT TEST + TRAINING CV</span></div>
+  <p class="intro-copy dark-copy">The scaler learns from training rows only. The test rows stay unseen until the final score.</p>
+</section>
+
+<section class="evaluation-summary">
+  <div class="score-block"><span class="eyebrow">TEST ACCURACY · K={{ evaluation.neighbors }}</span><strong>{{ "%.1f"|format(evaluation.accuracy * 100) }}<small>%</small></strong><span class="score-foot">{{ evaluation.test_rows }} held-out rows</span></div>
+  <div class="score-note"><span class="note-number">01</span><p>Accuracy is the share of test predictions that matched their known labels. It is one useful measure, not the whole story.</p></div>
+  <div class="score-note"><span class="note-number">02</span><p>K comparison uses five-fold cross-validation on training rows. The test set is not used to pick K.</p></div>
+</section>
+
+<section class="evaluation-grid">
+  <div class="matrix-panel">
+    <div class="section-heading"><div><p class="eyebrow">HELD-OUT ROWS</p><h2>Confusion matrix</h2></div><span class="matrix-key">ROWS: ACTUAL / COLUMNS: PREDICTED</span></div>
+    <table class="matrix-table">
+      <thead><tr><th></th><th>Pred. 0</th><th>Pred. 1</th></tr></thead>
+      <tbody>
+        <tr><th>Actual 0</th><td>{{ evaluation.confusion_matrix[0][0] }}</td><td>{{ evaluation.confusion_matrix[0][1] }}</td></tr>
+        <tr><th>Actual 1</th><td>{{ evaluation.confusion_matrix[1][0] }}</td><td>{{ evaluation.confusion_matrix[1][1] }}</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cv-panel">
+    <div class="section-heading"><div><p class="eyebrow">K SWEEP · TRAINING FOLDS</p><h2>Neighborhood size</h2></div><span class="matrix-key">MEAN CV ACCURACY</span></div>
+    <div class="cv-highlight"><span>Highest mean score</span><strong>K = {{ evaluation.best_cv_neighbors }}</strong><b>{{ "%.1f"|format(evaluation.best_cv_accuracy * 100) }}%</b></div>
+    <div class="cv-list">
+      {% for item in evaluation.cv_comparisons %}
+      <div class="cv-row {% if item.neighbors == evaluation.best_cv_neighbors %}cv-best{% endif %} {% if item.neighbors == default_neighbors %}cv-current{% endif %}">
+        <span>K{{ "%02d"|format(item.neighbors) }}</span>
+        <div class="cv-track"><i style="width: {{ item.accuracy * 100 }}%"></i></div>
+        <b>{{ "%.1f"|format(item.accuracy * 100) }}</b>
+      </div>
+      {% endfor %}
+    </div>
+    <p class="cv-legend"><span class="legend-current"></span> Current model K=23 <span class="legend-best"></span> Best cross-validation score</p>
+  </div>
+</section>
+
+<section class="learning-note">
+  <div><p class="eyebrow">THE FASTAPI PATH</p><h2>From form to result</h2></div>
+  <p>The browser sends feature values to a FastAPI route. The route validates them, calls the model helper in <code>KNN/classifieddata1.py</code>, then renders the result in a Jinja page. <a href="/docs">The interactive API docs</a> also expose the JSON prediction endpoint.</p>
+</section>
+{% endblock %}

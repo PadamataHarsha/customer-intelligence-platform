@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102b24">
+  <title>{% block title %}KNN Studio{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='/styles.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('home') }}" aria-label="KNN Studio home">
+      <span class="brand-mark">K</span>
+      <span>KNN <strong>STUDIO</strong></span>
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a class="{% if active_page == 'home' %}active{% endif %}" href="{{ url_for('home') }}">Dataset</a>
+      <a class="{% if active_page == 'predict' %}active{% endif %}" href="{{ url_for('predict_page') }}">Predict</a>
+      <a class="{% if active_page == 'evaluation' %}active{% endif %}" href="{{ url_for('evaluation') }}">Evaluation</a>
+    </nav>
+    <span class="status-indicator"><i></i> MODEL READY</span>
+  </header>
+  <main>{% block content %}{% endblock %}</main>
+  <footer class="footer">
+    <span>CLASSIFIED DATA / K-NEAREST NEIGHBORS</span>
+    <a href="/docs">FASTAPI DOCS <span aria-hidden="true">↗</span></a>
+  </footer>
+</body>
+</html>

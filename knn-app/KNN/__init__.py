@@ -1,0 +1,1 @@
+"""KNN model package for the learning app."""

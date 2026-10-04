@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Predict / KNN Studio{% endblock %}
+{% block content %}
+<section class="page-heading compact-heading">
+  <p class="eyebrow">02 / CLASSIFIER</p>
+  <div class="heading-row"><h1>Make a <em>prediction.</em></h1><span class="model-chip">STANDARDIZED · K={{ 23 }}</span></div>
+  <p class="intro-copy dark-copy">Enter one row of feature values. The model returns the closest class pattern.</p>
+</section>
+
+<section class="predict-layout">
+  <form class="prediction-form" action="{{ url_for('predict_form') }}" method="post" novalidate>
+    <div class="form-topline"><span>INPUT VECTOR</span><span>10 VALUES REQUIRED</span></div>
+    <div class="field-grid">
+      {% for feature in features %}
+      <label class="field" for="{{ feature }}">
+        <span>{{ feature }}</span>
+        <input id="{{ feature }}" name="{{ feature }}" type="number" step="any" value="{{ values.get(feature, '') }}" placeholder="0.000" inputmode="decimal" aria-invalid="{{ 'true' if errors.get(feature) else 'false' }}">
+        {% if errors.get(feature) %}<small class="field-error">{{ errors[feature] }}</small>{% endif %}
+      </label>
+      {% endfor %}
+    </div>
+    <div class="form-actions">
+      {% if errors %}<p class="form-error-summary">Check the highlighted values and try again.</p>{% else %}<span class="form-hint">All values must be finite numbers.</span>{% endif %}
+      <button class="button button-dark" type="submit">Classify row <span aria-hidden="true">→</span></button>
+    </div>
+  </form>
+
+  {% if result %}
+  <aside class="result-panel" aria-live="polite">
+    <p class="eyebrow">PREDICTION RESULT</p>
+    <span class="result-class">{{ result.prediction }}</span>
+    <h2>Class {{ result.prediction }}</h2>
+    <p class="result-caption">Nearest-neighbor vote from the fitted dataset.</p>
+    <div class="probability-list">
+      {% for label, probability in result.probabilities.items() %}
+      <div class="probability-row"><span>Class {{ label }}</span><strong>{{ "%.1f"|format(probability * 100) }}%</strong></div>
+      {% endfor %}
+    </div>
+  </aside>
+  {% else %}
+  <aside class="result-empty">
+    <span class="empty-mark">K</span>
+    <p>Prediction output<br>will appear here.</p>
+  </aside>
+  {% endif %}
+</section>
+{% endblock %}
