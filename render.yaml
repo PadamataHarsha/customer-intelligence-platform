@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: knn-studio
+    runtime: python
+    runtimeVersion: 3.10
+    buildCommand: pip install -r knn-app/requirements.txt
+    startCommand: cd knn-app && uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10
+    healthCheckPath: /health
